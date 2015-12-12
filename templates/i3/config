@@ -1,0 +1,80 @@
+{% if config('i3.font') %}
+font {{ config('i3.font') }}
+{% endif %}
+
+{% for key,value in config('i3.set') %}
+set ${{ key }} {{ value }}
+{% endfor %}
+
+{% if config('i3.floating_modifier') %}
+floating_modifier {{ config('i3.floating_modifier') }}
+{% endif %}
+
+{% for bind,sym in config('i3.bindsym') %}
+bindsym {{ bind }} {{ sym }}
+{% endfor %}
+
+{% for name,mode in config('i3.mode') %}
+mode "{{ name }}" {
+{% for bind,sym in mode.bindsym %}
+    bindsym {{ bind }} {{ sym }}
+{% endfor %}
+}
+{% endfor %}
+
+{% for bar in config('i3.bar') %}
+bar {
+    status_command {{ bar.status_command ?: 'i3status' }}
+    position {{ bar.position }}
+
+{% for output in bar.output %}
+    output {{ output }}
+{% endfor %}
+{% if bar.tray_output %}
+    tray_output {{ bar.tray_output }}
+{% endif %}
+{% if bar.font %}
+    font {{ bar.font }}
+{% endif %}
+
+{% if bar.colors %}
+    colors {
+{% for type in ["background", "statusline", "separator"] if bar.colors[type] %}
+        {{ type }} {{ bar.colors[type] }}
+{% endfor %}
+{% for type in ["focused_workspace", "active_workspace", "inactive_workspace", "urgent_workspace", "binding_mode"] if bar.colors[type] %}
+        {{ type }} {{ bar.colors[type].border }} {{ bar.colors[type].background }} {{ bar.colors[type].text }}
+{% endfor %}
+    }
+
+{% endif %}
+{% for bind,sym in bar.bindsym %}
+    bindsym {{ bind }} {{ sym }}
+{% endfor %}
+}
+
+{% endfor %}
+{% if config('i3.colors.background') %}
+client.background {{ config('i3.colors.background') }}
+{% endif %}
+{% for type in [ "focused", "focused_inactive", "unfocused", "urgent", "placeholder" ] if config('i3.colors.' ~ type) %}
+client.{{ type }} {{ config('i3.colors.' ~ type ~ '.border') }} {{ config('i3.colors.' ~ type ~ '.background') }} {{ config('i3.colors.' ~ type ~ '.text') }} {{ config('i3.colors.' ~ type ~ '.indicator') }}
+{% endfor %}
+
+{% for for_window in config('i3.for_window') %}
+for_window {{ for_window.selector }} {{ for_window.command }}
+{% endfor %}
+
+{% if config('i3.gaps.smart') %}
+smart_gaps on
+{% endif %}
+{% if config('i3.gaps.inner') %}
+gaps inner {{ config('i3.gaps.inner') }}
+{% endif %}
+{% if config('i3.gaps.inner') %}
+gaps outer {{ config('i3.gaps.outer') }}
+{% endif %}
+
+{% for exec in config('i3.exec') %}
+exec {{ exec.startupId != true ? '--no-startup-id ' }}{{ exec.command }}
+{% endfor %}

@@ -1,0 +1,12 @@
+<?php
+
+package('i3');
+
+$dir = dir(config('info.home') . '/.i3')
+  ->user(config('info.user'))
+  ->group(config('info.group'));
+
+file(config('info.home') . '/.i3/config')
+  ->user(config('info.user'))
+  ->group(config('info.group'))
+  ->contents(template('templates/i3/config', []));

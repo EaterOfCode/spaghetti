@@ -1,0 +1,5 @@
+<?php
+
+if (config('i3.enabled')) {
+    include __DIR__ . '/i3.law';
+}
